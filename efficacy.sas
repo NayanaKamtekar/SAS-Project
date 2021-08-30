@@ -180,7 +180,7 @@ data final;
    else if b then
    do;
       group01label = 'Primary Endpoint';
-      group02label = 'Visit '||strip(put(visit,best.));
+      group02label = '   Visit '||strip(put(visit,best.));
       rowlabel = repeat(' ',7)||put(stats,$stats.);
 
       group01ord = 2;
@@ -189,23 +189,23 @@ data final;
    else
    do;
       group01label = 'Secondary Endpoint, n (%)';
-      group02label = 'Visit '||strip(put(visit,best.));
+      group02label = '   Visit '||strip(put(visit,best.));
       rowlabel = repeat(' ',7)||put(secondary_endpoint,$secondend.);
       
       group01ord = 3;
       roword = input(secondary_endpoint,secondendord.);
    end;
+   drop visit stats secondary_endpoint;
 run;
 
 /* Print report to .docx file */
 title j=center "Efficacy endpoints summary - All Subjects";
 ods rtf file='~/efficacy.rtf' bodytitle;
 proc report data=final headline center;
-   column group01ord group01label visit group02label roword rowlabel treatment control total;
+   column group01ord group01label group02label roword rowlabel treatment control total;
 
    define group01ord   / order order=internal noprint missing;
    define group01label / order order=internal noprint missing;
-   define visit        / order order=internal noprint missing;
    define group02label / order order=internal noprint missing;
    define roword       / order order=internal noprint missing;
    define rowlabel     / "" display style(column)={asis=on};
@@ -220,7 +220,7 @@ proc report data=final headline center;
 
    compute before group02label / style={asis=on};
       len=lengthn(group02label);
-      line @4 group02label $varying25. len;
+      line @1 group02label $varying25. len;
    endcomp;
 run;
 ods rtf close;
